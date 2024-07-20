@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métricas de Rendimiento</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Análisis de Complejidad</h1>
+    <button onclick="obtenerDatos('insercion')">Inserción</button>
+    <button onclick="obtenerDatos('busqueda')">Búsqueda</button>
+    <button onclick="obtenerDatos('ordenamiento')">Ordenamiento</button>
+    <canvas id="miGrafico"></canvas>
+
+    <script>
+        let miGrafico; 
+
+        async function obtenerDatos(tipo) {
+            try {
+                const response = await fetch(`/data?type=${tipo}`);
+                const data = await response.json();
+                actualizarGrafico(data.labels, data.times, tipo);
+            } catch (error) {
+                console.error('Error obteniendo datos:', error);
+            }
+        }
+
+        function actualizarGrafico(labels, times, tipo) {
+            const ctx = document.getElementById('miGrafico').getContext('2d');
+
+            if (miGrafico) {
+                miGrafico.destroy();
+            }
+
+            miGrafico = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `Tiempos de ${tipo}`,
+                        data: times,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
